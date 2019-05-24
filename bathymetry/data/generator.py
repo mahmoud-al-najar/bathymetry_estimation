@@ -5,7 +5,7 @@ np.random.seed(448)
 
 class DataGenerator(keras.utils.Sequence):
     """Generates data for Keras"""
-    def __init__(self, list_ids, labels, batch_size=1, x_shape=(200, 200, 3), y_shape=(200, 200, 1), shuffle=True):
+    def __init__(self, list_ids, labels, batch_size=1, x_shape=(200, 200, 4), y_shape=(200, 200, 1), shuffle=True):
         """Initialization"""
         self.x_shape = x_shape
         self.y_shape = y_shape
@@ -49,7 +49,7 @@ class DataGenerator(keras.utils.Sequence):
         # Generate data
         for i, ID in enumerate(list_ids_temp):
             burst = np.load(ID)
-            burst = burst[:3, :, :]
+            burst = burst[:4, :, :]
             burst = np.rollaxis(burst, 0, 3)
             x[i, ] = burst
             bathy = np.load(self.labels[ID])

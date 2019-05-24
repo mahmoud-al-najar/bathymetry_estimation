@@ -3,7 +3,7 @@ import keras.models as models
 
 
 class UNet:
-    def __init__(self, input_shape=(200, 200, 3)):
+    def __init__(self, input_shape=(200, 200, 4)):
         self.input_shape = input_shape
 
     def get_crop_shape(self, target, refer):
