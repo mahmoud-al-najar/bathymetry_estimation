@@ -15,8 +15,8 @@ list_ids = []
 labels = dict()
 
 for r in all_bursts_and_bathymetries:
-    list_ids.append(r[1])
-    labels[r[1]] = r[0]
+    list_ids.append(r[0])
+    labels[r[0]] = r[1]
 
 partition = dict()
 partition['train'] = list_ids[:17000]

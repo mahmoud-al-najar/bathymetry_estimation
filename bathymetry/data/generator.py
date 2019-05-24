@@ -54,5 +54,6 @@ class DataGenerator(keras.utils.Sequence):
             x[i, ] = burst
             bathy = np.load(self.labels[ID])
             bathy = np.expand_dims(bathy, axis=2)
+            bathy = bathy / 100
             y[i] = bathy
         return x, y
