@@ -39,5 +39,9 @@ epochs = 10
 num_batches = int(total_items/batch_size)
 
 # moved from sgd to rmsprop
-model.compile(loss='mean_squared_error', optimizer='rmsprop', metrics=['mean_squared_error'])
+model.compile(loss='mean_squared_error', optimizer='sgd', metrics=['mean_squared_error'])
 model.fit_generator(generator=generator_train, steps_per_epoch=num_batches, epochs=epochs, verbose=1)
+scores = model.evaluate_generator(generator=generator_test)
+
+model.save('sgd_model')
+print(scores)
