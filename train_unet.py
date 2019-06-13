@@ -54,14 +54,6 @@ model.compile(loss='mean_squared_error', optimizer=Adam(), metrics=['mean_square
 history = model.fit_generator(generator=generator_train, steps_per_epoch=num_batches, epochs=epochs, verbose=1,
                               validation_data=generator_validation, callbacks=[es, csv_logger])
 
-f_val_loss = open("val_loss.txt", "w+")
-for h in history.history['val_loss']:
-    f_val_loss.write(str(h) + '\n')
-
-f_loss = open("loss.txt", "w+")
-for h in history.history['loss']:
-    f_loss.write(str(h) + '\n')
-
 scores = model.evaluate_generator(generator=generator_test)
 
 model.save('sgd_model')

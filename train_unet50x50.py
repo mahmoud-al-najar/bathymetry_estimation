@@ -42,11 +42,11 @@ print('Test: ' + str(len(partition['test'])))
 batch_size = 64
 epochs = 100
 
-generator_train = DataGenerator(partition['train'], labels, batch_size=batch_size,
+generator_train = DataGenerator(partition['train'], labels, batch_size=1,
                                 x_shape=(50, 50, 4), y_shape=(50, 50, 1))
-generator_test = DataGenerator(partition['test'], labels, batch_size=batch_size,
+generator_test = DataGenerator(partition['test'], labels, batch_size=1,
                                x_shape=(50, 50, 4), y_shape=(50, 50, 1))
-generator_validation = DataGenerator(partition['validation'], labels, batch_size=batch_size,
+generator_validation = DataGenerator(partition['validation'], labels, batch_size=1,
                                      x_shape=(50, 50, 4), y_shape=(50, 50, 1))
 
 unet = UNet()
@@ -65,14 +65,6 @@ model.compile(loss='mean_squared_error', optimizer=Adam(), metrics=['mean_square
 
 history = model.fit_generator(generator=generator_train, steps_per_epoch=num_batches, epochs=epochs, verbose=1,
                               validation_data=generator_validation, callbacks=[es, csv_logger])
-
-f_val_loss = open("val_loss.txt", "w+")
-for h in history.history['val_loss']:
-    f_val_loss.write(str(h) + '\n')
-
-f_loss = open("loss.txt", "w+")
-for h in history.history['loss']:
-    f_loss.write(str(h) + '\n')
 
 scores = model.evaluate_generator(generator=generator_test)
 
