@@ -1,19 +1,23 @@
 import csv
 import random
 from bathymetry.data.generator50x50 import DataGenerator
+#from bathymetry.models.unet import UNet
 from bathymetry.models.unet50x50 import UNet
 from keras.optimizers import Adam
-from keras.callbacks import EarlyStopping, CSVLogger
+from keras.callbacks import EarlyStopping, CSVLogger, ModelCheckpoint
 import math
+from tensorflow import set_random_seed
 
 with open('ids.csv', 'r') as f:
     reader = csv.reader(f)
     all_bursts_and_bathymetries = list(reader)
 
-random.seed(449)
+seed = 0
+set_random_seed(seed)
+random.seed(seed)
 random.shuffle(all_bursts_and_bathymetries)
 
-dataset_size = 50000
+dataset_size = 100000
 list_ids = []
 labels = dict()
 
@@ -54,19 +58,22 @@ model = unet.create_model()
 model.summary()
 
 total_items = len(generator_train)
-num_batches = int(total_items / batch_size)
+batch_size = 64
+epochs = 200
+num_batches = int(total_items/batch_size)
 
-es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=3)
+es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=10)
 csv_logger = CSVLogger('training.log', separator=',')
-model.compile(loss='mean_squared_error', optimizer=Adam(), metrics=['mean_squared_error'])
+filepath="50x50-Adam-weights-improvement-{epoch:02d}-{val_loss:.2f}.hdf5"
+cp = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 
-# from keras.utils import plot_model
-# plot_model(model, to_file='unet50x50.png', show_shapes=True, show_layer_names=True)
-
+# mean_squared_logarithmic_error
+# mean_squared_error
+model.compile(loss='mean_squared_logarithmic_error', optimizer=Adam(), metrics=['mean_squared_logarithmic_error', 'mean_squared_error'])
 history = model.fit_generator(generator=generator_train, steps_per_epoch=num_batches, epochs=epochs, verbose=1,
-                              validation_data=generator_validation, callbacks=[es, csv_logger])
+                              validation_data=generator_validation, callbacks=[csv_logger, es, cp])
 
 scores = model.evaluate_generator(generator=generator_test)
 
-model.save('sgd_model')
+model.save('50x50_Adam_model')
 print(scores)

@@ -3,22 +3,29 @@ import random
 from bathymetry.data.generator import DataGenerator
 from bathymetry.models.unet import UNet
 from keras.optimizers import Adam
-from keras.callbacks import EarlyStopping, CSVLogger
+from keras.callbacks import EarlyStopping, CSVLogger, ModelCheckpoint
 import math
+from tensorflow import set_random_seed
+import numpy as np
+from keras import backend as K
 
+def max_error(y_true, y_pred):
+    return K.max(K.abs(y_true - y_pred))
 
 with open('ids.csv', 'r') as f:
     reader = csv.reader(f)
     all_bursts_and_bathymetries = list(reader)
 
-random.seed(449)
+seed = 0
+set_random_seed(seed)
+random.seed(seed)
 random.shuffle(all_bursts_and_bathymetries)
 
-dataset_size = 50000
+#dataset_size = 200000
 list_ids = []
 labels = dict()
 
-for r in all_bursts_and_bathymetries[:dataset_size]:
+for r in all_bursts_and_bathymetries:
     list_ids.append(r[0])
     labels[r[0]] = r[1]
 
@@ -44,17 +51,21 @@ model = unet.create_model()
 model.summary()
 
 total_items = len(generator_train)
-batch_size = 64
-epochs = 100
+batch_size = 256
+epochs = 200
 num_batches = int(total_items/batch_size)
 
-es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=3)
+#es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=10)
 csv_logger = CSVLogger('training.log', separator=',')
-model.compile(loss='mean_squared_error', optimizer=Adam(), metrics=['mean_squared_error'])
-history = model.fit_generator(generator=generator_train, steps_per_epoch=num_batches, epochs=epochs, verbose=1,
-                              validation_data=generator_validation, callbacks=[es, csv_logger])
+filepath="SGD_fulldataset_mse-weights-improvement-{epoch:02d}-{val_loss:.2f}.hdf5"
+cp = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, mode='min', period=5)
+
+# mean_squared_logarithmic_error
+# mean_squared_error
+model.compile(loss='mean_squared_error', optimizer='sgd', metrics=['mean_squared_logarithmic_error', 'mean_squared_error'])
+history = model.fit_generator(generator=generator_train, steps_per_epoch=num_batches, epochs=epochs, verbose=1, validation_data=generator_validation, callbacks=[csv_logger,cp])
 
 scores = model.evaluate_generator(generator=generator_test)
 
-model.save('sgd_model')
+model.save('sgd_mse_model_fulldataset')
 print(scores)

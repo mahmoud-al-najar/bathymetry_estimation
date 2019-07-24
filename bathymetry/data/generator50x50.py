@@ -63,7 +63,7 @@ class DataGenerator(keras.utils.Sequence):
             burst = np.rollaxis(burst, 0, 3)
             bathy = np.load(self.labels[ID][:-3])
             bathy = np.expand_dims(bathy, axis=2)
-            bathy = bathy / 100
+            bathy = bathy / 10
 
             if slice != -1:
                 if slice == 0:

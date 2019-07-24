@@ -51,9 +51,11 @@ class DataGenerator(keras.utils.Sequence):
             burst = np.load(ID)
             burst = burst[:4, :, :]
             burst = np.rollaxis(burst, 0, 3)
+            # additional burst normalization 
+            burst = (burst - np.min(burst[:, :100, :])) / np.max(burst[:, :100, :])
             x[i, ] = burst
             bathy = np.load(self.labels[ID])
             bathy = np.expand_dims(bathy, axis=2)
-            bathy = bathy / 100
+            bathy = bathy / 10
             y[i] = bathy
         return x, y
