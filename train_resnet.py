@@ -74,7 +74,7 @@ depth = n * 9 + 2
 model_type = 'ResNet%d' % depth
 input_shape = (20, 20, 4)
 
-total_items = len(generator_train)
+total_items = len(partition['train'])
 batch_size = 256
 epochs = 50
 num_batches = int(total_items/batch_size)
