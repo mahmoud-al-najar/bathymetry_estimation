@@ -27,6 +27,7 @@ class ResNet:
         self.input_shape = input_shape
         self.output_nodes = output_nodes
         self.depth = n * 9 + 2
+        self.model_name = 'ResNet%d' % self.depth
 
     def _resnet_layer(self, inputs,
                       num_filters=16,
@@ -154,6 +155,7 @@ class ResNet:
         x = Activation('relu')(x)
         x = AveragePooling2D(pool_size=2)(x)
         y = Flatten()(x)
+        
         outputs = Dense(self.output_nodes,
                         activation='relu',
                         kernel_initializer='he_normal')(y)
