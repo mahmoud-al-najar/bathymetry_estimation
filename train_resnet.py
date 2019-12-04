@@ -103,7 +103,8 @@ callbacks = [csv_logger, checkpoint, lr_reducer, lr_scheduler]
 
 # Compile and train model
 model.compile(loss='mean_squared_error', optimizer=Adam(lr=lr_schedule(0)), metrics=['mean_squared_logarithmic_error', 'mean_squared_error'])
-history = model.fit_generator(generator=generator_train, steps_per_epoch=num_batches, epochs=epochs, verbose=1, validation_data=generator_validation, callbacks=[csv_logger, checkpoint])
+history = model.fit_generator(generator=generator_train, steps_per_epoch=num_batches, epochs=epochs, verbose=1,
+                              validation_data=generator_validation, callbacks=callbacks)
 
 scores = model.evaluate_generator(generator=generator_test)
 print(scores)
