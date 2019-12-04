@@ -48,7 +48,7 @@ class ExtractsGenerator(keras.utils.Sequence):
         y = np.empty((self.batch_size, self.y_size))
         # Generate data
         for i, ID in enumerate(list_ids_temp):
-            burst = np.load(ID)
+            burst = np.load(ID + '.npy')
             burst = burst[:4, :, :]
             burst = np.rollaxis(burst, 0, 3)
             x[i, ] = burst
