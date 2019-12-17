@@ -79,9 +79,9 @@ print('Training: ' + str(len(partition['train'])))
 print('Validation: ' + str(len(partition['validation'])))
 print('Test: ' + str(len(partition['test'])))
 
-generator_train = ExtractsGenerator(partition['train'], labels)
-generator_test = ExtractsGenerator(partition['test'], labels)
-generator_validation = ExtractsGenerator(partition['validation'], labels)
+generator_train = ExtractsGenerator(partition['train'], labels, x_shape=input_shape)
+generator_test = ExtractsGenerator(partition['test'], labels, x_shape=input_shape)
+generator_validation = ExtractsGenerator(partition['validation'], labels, x_shape=input_shape)
 
 total_items = len(partition['train'])
 num_batches = int(total_items/batch_size)
