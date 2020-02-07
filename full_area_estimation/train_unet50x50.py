@@ -1,8 +1,7 @@
 import csv
 import random
-from bathymetry.data.generator50x50 import DataGenerator
-#from bathymetry.models.unet import UNet
-from bathymetry.models.unet50x50 import UNet
+from full_area_estimation.bathymetry.data.generator50x50 import DataGenerator
+from full_area_estimation.bathymetry.models.unet50x50 import UNet
 from keras.optimizers import Adam
 from keras.callbacks import EarlyStopping, CSVLogger, ModelCheckpoint
 import math

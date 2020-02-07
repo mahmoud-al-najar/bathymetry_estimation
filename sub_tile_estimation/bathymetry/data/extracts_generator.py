@@ -52,9 +52,5 @@ class ExtractsGenerator(keras.utils.Sequence):
             burst = burst[:4, :, :]
             burst = np.rollaxis(burst, 0, 3)
             x[i, ] = burst
-
-            # bathy = np.load(self.labels[ID])
-            # bathy = np.expand_dims(bathy, axis=2)
-            # bathy = bathy / 10
             y[i] = float(self.labels[ID]) / 10
         return x, y
