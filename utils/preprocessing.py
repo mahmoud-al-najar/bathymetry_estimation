@@ -48,12 +48,13 @@ def __normxcorr2(template, image, mode="full"):
 
 
 def apply_normxcorr2(sub_tile):
+    """"sub_tile: (cross_shore, long_shore, bands)"""
     dim1_size = sub_tile.shape[0]
     dim2_size = sub_tile.shape[1]
     img = np.zeros(sub_tile.shape)
     for i in range(4):
         img_t = np.squeeze(sub_tile[:, :, i])
-        img_t = img_t - np.median(img_t)
+        img_t = img_t - np.ma.median(img_t)
         c0 = __normxcorr2(img_t, img_t)
         c2 = __normxcorr2(img_t, c0)
         c2 = c2[int(c2.shape[0] / 2 - dim1_size / 2 + 1): int(c2.shape[0] / 2 + dim2_size / 2 + 1),
@@ -63,6 +64,7 @@ def apply_normxcorr2(sub_tile):
 
 
 def apply_fft(sub_tile, t_max=25, t_min=5):
+    """"sub_tile: (cross_shore, long_shore, bands)"""
     n, m, c = sub_tile.shape
     kx = np.fft.fftshift(np.fft.fftfreq(n, 10))
     ky = np.fft.fftshift(np.fft.fftfreq(m, 10))
@@ -70,7 +72,7 @@ def apply_fft(sub_tile, t_max=25, t_min=5):
     ky = np.repeat(np.reshape(ky, (1, m)), n, axis=0)
     threshold_min = 1 / (1.56 * t_max ** 2)
     threshold_max = 1 / (1.56 * t_min ** 2)
-    sub_tile = np.zeros(sub_tile.shape)
+    filtered = np.zeros(sub_tile.shape)
     for channel in range(c):
         r = sub_tile[:, :, channel]
         r = detrend(detrend(r, axis=1), axis=0)
@@ -81,17 +83,18 @@ def apply_fft(sub_tile, t_max=25, t_min=5):
         kr[kr > threshold_max] = 0
         bool_kr = (kr > 0)
         energy_r *= bool_kr
-        sub_tile[:, :, channel] = np.real(np.fft.ifft2(np.fft.ifftshift(energy_r)))
-    return sub_tile
+        filtered[:, :, channel] = np.real(np.fft.ifft2(np.fft.ifftshift(energy_r)))
+    return filtered
 
 
 def apply_hanning(sub_tile):
+    """"sub_tile: (cross_shore, long_shore, bands)"""
     ri = np.arange(0, 1, 0.01)
     ai = (1 - (np.cos((np.pi * 0.5) + (np.pi * ri * 0.5)) ** 2))
     x_center = y_center = int(sub_tile.shape[1] / 2)
     tile_indices = np.indices(sub_tile.shape)
-    dxmi = np.abs(tile_indices[2] - x_center)  # x is cross-shore
-    dymi = np.abs(tile_indices[1] - y_center)
+    dxmi = np.abs(tile_indices[1] - x_center)
+    dymi = np.abs(tile_indices[0] - y_center)
     r = np.sqrt((dxmi ** 2) + (dymi ** 2))
     r = r / np.max(r)
     wmi = interp1d(x=ri, y=ai, kind='linear', fill_value='extrapolate')(r)
@@ -100,7 +103,7 @@ def apply_hanning(sub_tile):
 
 
 def apply_2d_gradient(sub_tile):
-    """"tile: (cross_shore, long_shore, bands)"""
+    """"sub_tile: (cross_shore, long_shore, bands)"""
     cross_shore_slopes = copy.deepcopy(sub_tile)
     long_shore_slopes = copy.deepcopy(sub_tile)
 
