@@ -90,6 +90,7 @@ for dir_path, sub_dirs, files in os.walk(raw_path):
                     interval_end = interval_start + cross_shore_interval_size
                     for i in range(n_cross_shore_interval_random_extracts):
                         if interval_end - tile_size > interval_start:
+                            # TODO: Change sub_tile dimensions orders to channels last, use apply_per_band_minmax_normalization
                             y = np.random.choice(range(int(interval_start), int(interval_end - tile_size - 1)))
                             x = np.random.choice(range(0, long_shore - tile_size - 1))
                             avg_bathy = np.average(cropped_bathy[x:x + tile_size, y:y + tile_size])

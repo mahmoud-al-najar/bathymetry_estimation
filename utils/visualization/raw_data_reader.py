@@ -1,12 +1,9 @@
-from mpl_toolkits.mplot3d import Axes3D
 import netCDF4
 import numpy as np
 from keras.models import load_model
-from utils.reconstruction_models_evaluator import evaluate_single_case
+from utils.evaluation.reconstruction_models_evaluator import evaluate_single_case
 from matplotlib import pyplot as plt
 import cmocean
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-import json
 
 
 def myround(x, base=5):

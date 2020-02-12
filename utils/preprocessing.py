@@ -49,16 +49,17 @@ def __normxcorr2(template, image, mode="full"):
 
 def apply_normxcorr2(sub_tile):
     """"sub_tile: (cross_shore, long_shore, bands)"""
-    dim1_size = sub_tile.shape[0]
-    dim2_size = sub_tile.shape[1]
+    cross_shore = sub_tile.shape[0]
+    long_shore = sub_tile.shape[1]
+    bands = sub_tile.shape[2]
     img = np.zeros(sub_tile.shape)
-    for i in range(4):
+    for i in range(bands):
         img_t = np.squeeze(sub_tile[:, :, i])
         img_t = img_t - np.ma.median(img_t)
         c0 = __normxcorr2(img_t, img_t)
         c2 = __normxcorr2(img_t, c0)
-        c2 = c2[int(c2.shape[0] / 2 - dim1_size / 2 + 1): int(c2.shape[0] / 2 + dim2_size / 2 + 1),
-                int(c2.shape[0] / 2 - dim1_size / 2 + 1): int(c2.shape[0] / 2 + dim2_size / 2 + 1)]
+        c2 = c2[int(c2.shape[0] / 2 - cross_shore / 2 + 1): int(c2.shape[0] / 2 + long_shore / 2 + 1),
+                int(c2.shape[0] / 2 - cross_shore / 2 + 1): int(c2.shape[0] / 2 + long_shore / 2 + 1)]
         img[:, :, i] = c2
     return img
 
@@ -115,3 +116,11 @@ def apply_2d_gradient(sub_tile):
 
     summed_up = long_shore_slopes[:-1, :, :] + cross_shore_slopes[:, :-1, :]
     return np.sqrt(summed_up)
+
+
+def apply_per_band_minmax_normalization(sub_tile):
+    """"sub_tile: (cross_shore, long_shore, bands)"""
+    for i in range(sub_tile.shape[2]):
+        sub_tile[:, :, i] = (sub_tile[:, :, i] - np.min(sub_tile[:, :, i])) / \
+                           (np.max(sub_tile[:, :, i]) - np.min(sub_tile[:, :, i]))
+    return sub_tile
