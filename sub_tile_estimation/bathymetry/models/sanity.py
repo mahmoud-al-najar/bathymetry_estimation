@@ -20,4 +20,5 @@ class Sanity:
         model.add(Dense(256, activation='relu', kernel_initializer="he_normal"))
         model.add(Dense(256, activation='relu', kernel_initializer="he_normal"))
         model.add(Dense(self.output_nodes, activation='relu', kernel_initializer="he_normal"))
+        model.name = self.model_name
         return model

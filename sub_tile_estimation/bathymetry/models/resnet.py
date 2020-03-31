@@ -163,4 +163,5 @@ class ResNet:
 
         # Instantiate model.
         model = Model(inputs=inputs, outputs=outputs)
+        model.name = self.model_name
         return model

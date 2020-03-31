@@ -12,6 +12,10 @@ from sub_tile_estimation.bathymetry.data.extracts_generator import ExtractsGener
 from sub_tile_estimation.bathymetry.models.sanity import Sanity
 from sub_tile_estimation.bathymetry.models.resnet import ResNet
 
+# from bathymetry.data.extracts_generator import ExtractsGenerator
+# from bathymetry.models.sanity import Sanity
+# from bathymetry.models.resnet import ResNet
+
 
 def lr_schedule(epoch):
     """Learning Rate Schedule
@@ -99,7 +103,7 @@ for lr in lr_list:
                 num_batches = int(total_items / batch_size)
 
                 # Create model
-                # resnet = ResNet(input_shape=input_shape, output_nodes=output_nodes, n=2)
+                # resnet = ResNet(input_shape=input_shape, output_nodes=output_nodes, n=6)
                 # model = resnet.create_model()
                 sanity = Sanity(input_shape=input_shape, output_nodes=output_nodes)
                 model = sanity.create_model()
